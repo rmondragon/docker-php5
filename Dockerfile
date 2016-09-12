@@ -5,7 +5,8 @@ ENV DEBIAN_FRONTEND=noninteractive \
     APACHE_DOCUMENTROOT=/var/www/htdocs \
     APACHE_LOG_DIR=/logs \
     PHP_INI_DIR=/usr/local/etc/php \
-    PHP_FILENAME=php-5.5.38.tar.xz
+    PHP_FILENAME=php-5.5.38.tar.xz \
+    TERM=xterm
 
 #dependencies
 RUN apt-get update && apt-get install -y \
@@ -94,7 +95,7 @@ RUN apt-get update \
 
 #setup host
 RUN a2enmod rewrite \
-    && echo "ServerName delivery" | \
+    && echo "ServerName base" | \
     tee /etc/apache2/conf-available/fqdn.conf \
     && a2enconf fqdn \
     && a2dismod mpm_event \

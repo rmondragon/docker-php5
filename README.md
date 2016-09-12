@@ -1,4 +1,4 @@
-## Docker php5 Dockerfile
+## docker-php5
 
 This repository contains the Dockerfile for Apache PHP-5.5 & Ubuntu 14.04
 
@@ -11,6 +11,7 @@ Basic packages
         - Aerospike 
         - Memcached 
         - Imagick
+        - pHash
         - Xdebug
 
 ### Usage
@@ -18,7 +19,7 @@ Basic packages
 * To build the image
 
 ```
-docker build -t my-php-app .
+docker build -t rmondragon/php5 .
 ```
 
 * The following will run `rmondragon/php5` default setup though port 8080. To check phpinfo, browse http://localhost:8080/phpinfo.php
