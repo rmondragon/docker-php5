@@ -74,6 +74,8 @@ RUN apt-get update && apt-get install -y \
     libmagickcore5-extra \
     libmagickwand-dev \
     libmagickwand5 \
+    zip \
+    unzip \
     --no-install-recommends
 
 #bison
@@ -95,8 +97,7 @@ RUN apt-get update \
 
 #setup host
 RUN a2enmod rewrite \
-    && echo "ServerName base" | \
-    tee /etc/apache2/conf-available/fqdn.conf \
+    && echo "ServerName localhost" | tee /etc/apache2/conf-available/fqdn.conf \
     && a2enconf fqdn \
     && a2dismod mpm_event \
     && a2enmod mpm_prefork
@@ -161,7 +162,7 @@ RUN mkdir -p $PHP_INI_DIR/conf.d \
     && make -j"$(nproc)" \
     && make install
 
-# phpunit
+# phpunit 4.8.9 last version for php 5.5
 RUN cd /tmp/ \
     && curl -sS https://getcomposer.org/installer | php \
     && mv composer.phar /usr/local/bin/ \
@@ -170,19 +171,20 @@ RUN cd /tmp/ \
     && chmod 755 phpunit.phar \
     && mv phpunit.phar /usr/local/bin/phpunit
 
-#memcached
+#memcached 2.2.0 last version for php 5.5
 RUN cd /tmp/ \
     && git clone https://github.com/php-memcached-dev/php-memcached.git \
     && cd php-memcached \
+    && git checkout tags/2.2.0 \
     && phpize \
     && ./configure --disable-memcached-sasl \
     && make \
     && make install \
     && bash -c "echo 'extension=/usr/local/lib/php/extensions/no-debug-non-zts-20121212/memcached.so' >> /usr/local/etc/php/conf.d/10-memcached.ini"
 
-# aerospike
+# aerospike 3.4.14 last version
 RUN cd /tmp/ \
-    && composer require aerospike/aerospike-client-php "3.4.9" \
+    && composer require aerospike/aerospike-client-php "3.4.14" \
     && cd vendor/aerospike/aerospike-client-php/ \
     && find src/aerospike -name "*.sh" -exec chmod +x {} \; \
     && composer run-script post-install-cmd \
@@ -192,12 +194,12 @@ RUN cd /tmp/ \
     && bash -c "echo 'aerospike.udf.lua_system_path=/usr/local/aerospike/lua' >> /usr/local/etc/php/conf.d/20-aerospike.ini" \
     && bash -c "echo 'aerospike.udf.lua_user_path=/usr/local/aerospike/usr-lua' >> /usr/local/etc/php/conf.d/20-aerospike.ini"
 
-# imagick
+# imagick 3.4.3 last version
 RUN cd /tmp/ \
     && pecl install imagick  \
     && bash -c "echo 'extension=imagick.so' >> /usr/local/etc/php/conf.d/30-imagick.ini" \
 
-# geo-ip
+# geo-ip beta 1.1.1
 RUN cd /tmp/ \
     && pecl install geoip-beta  \
     && bash -c "echo 'extension=geoip.so' >> /usr/local/etc/php/conf.d/40-geoip.ini" \
@@ -207,7 +209,7 @@ RUN cd /tmp/ \
     && gunzip GeoLiteCity.dat.gz \
     && cp GeoLiteCity.dat GeoIPCity.dat
 
-#phash
+#phash 0.9.6 last version for php 5.5
 RUN add-apt-repository ppa:mc3man/trusty-media \
     && apt-get update \
     && apt-get dist-upgrade -y \
@@ -226,11 +228,11 @@ RUN add-apt-repository ppa:mc3man/trusty-media \
     && make install \
     && bash -c "echo 'extension=/usr/local/lib/php/extensions/no-debug-non-zts-20121212/pHash.so' >> /usr/local/etc/php/conf.d/50-phash.ini"
 
-#xdebug
+#xdebug 2.5.4 last version
 RUN cd /tmp/ \
-    && wget https://xdebug.org/files/xdebug-2.4.1.tgz \
-    && tar -xvzf xdebug-2.4.1.tgz \
-    && cd xdebug-2.4.1/ \
+    && wget https://xdebug.org/files/xdebug-2.5.4.tgz \
+    && tar -xvzf xdebug-2.5.4.tgz \
+    && cd xdebug-2.5.4/ \
     && phpize \
     && ./configure \
     && make \
