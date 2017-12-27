@@ -184,8 +184,8 @@ RUN cd /tmp/ \
 
 # aerospike 3.4.14 last version
 RUN cd /tmp/ \
-    && composer require aerospike/aerospike-client-php "3.4.14" \
-    && cd vendor/aerospike/aerospike-client-php/ \
+    && composer require aerospike/aerospike-client-php5 "3.4.15" \
+    && cd vendor/aerospike/aerospike-client-php5/ \
     && find src/aerospike -name "*.sh" -exec chmod +x {} \; \
     && composer run-script post-install-cmd \
     && cd src/aerospike \
@@ -196,8 +196,8 @@ RUN cd /tmp/ \
 
 # imagick 3.4.3 last version
 RUN cd /tmp/ \
-    && pecl install imagick  \
-    && bash -c "echo 'extension=imagick.so' >> /usr/local/etc/php/conf.d/30-imagick.ini" \
+    && pecl install imagick \
+    && bash -c "echo 'extension=imagick.so' >> /usr/local/etc/php/conf.d/30-imagick.ini"
 
 # geo-ip beta 1.1.1
 RUN cd /tmp/ \
@@ -210,11 +210,17 @@ RUN cd /tmp/ \
     && cp GeoLiteCity.dat GeoIPCity.dat
 
 #phash 0.9.6 last version for php 5.5
+RUN add-apt-repository main \
+    && add-apt-repository universe \
+    && add-apt-repository restricted \
+    && add-apt-repository multiverse \
+    && apt-get install -y cimg-dev
+
 RUN add-apt-repository ppa:mc3man/trusty-media \
     && apt-get update \
     && apt-get dist-upgrade -y \
     && apt-get install -y ffmpeg libavformat-dev libmpg123-dev libsamplerate-dev \
-    libsndfile-dev cimg-dev libavcodec-dev libswscale-dev \
+    libsndfile-dev libavcodec-dev libswscale-dev \
     && cd /tmp/ \
     && git clone -b master https://github.com/rmondragon/pHash-0.9.6-patches \
     && cd pHash-0.9.6-patches/pHash-0.9.6/ \
